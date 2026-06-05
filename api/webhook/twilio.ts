@@ -149,24 +149,21 @@ export default async function handler(req: any, res: any) {
             const limitedResults = matches.slice(0, 8); 
             let messageBody = `${contextMessage}\n\n`;
             
-            const maxNameLen = 15;
-            const maxLocLen = 12;
-            const maxQtyLen = 6;
+            const maxNameLen = Math.max(6, ...limitedResults.map(i => String(i.name || '').trim().length));
+            const maxLocLen = Math.max(6, ...limitedResults.map(i => String(i.locator || '').trim().length));
             
             const padText = (text: string, max: number) => {
-              let str = String(text || '').trim();
-              if (str.length > max) return str.substring(0, max - 1) + '…';
-              return str.padEnd(max, ' ');
+              return String(text || '').trim().padEnd(max, ' ');
             };
 
             messageBody += "```\n";
-            messageBody += "Barang          | Lokasi       | Stok  \n";
-            messageBody += "----------------+--------------+-------\n";
+            messageBody += padText("Barang", maxNameLen) + " | " + padText("Lokasi", maxLocLen) + " | Stok\n";
+            messageBody += "-".repeat(maxNameLen) + "-+-" + "-".repeat(maxLocLen) + "-+------\n";
             
             limitedResults.forEach(item => {
               const nam = padText(item.name, maxNameLen);
               const loc = padText(item.locator, maxLocLen);
-              const qty = padText(item.lastQty, maxQtyLen);
+              const qty = String(item.lastQty || '').trim();
               messageBody += `${nam} | ${loc} | ${qty}\n`;
             });
             messageBody += "```\n";

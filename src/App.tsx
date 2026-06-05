@@ -94,13 +94,13 @@ export default function App() {
                   </div>
                 </div>
                 <div className="flex gap-3 justify-end">
-                  <div className="bg-neutral-100 text-neutral-800 px-3 py-2 rounded-lg rounded-tr-none inline-block max-w-[85%] text-sm whitespace-pre-wrap font-mono">
+                  <div className="bg-neutral-100 text-neutral-800 px-3 py-2 rounded-lg rounded-tr-none inline-block max-w-[85%] text-sm whitespace-pre-wrap font-mono overflow-x-auto">
                     *Hasil Limit 8 Data untuk "elbow"*<br/><br/>
                     ```<br/>
-                    Barang          | Lokasi       | Stok<br/>
-                    ----------------+--------------+-------<br/>
-                    1" PVC ELBOW    | PSN-JKT P5 P | 1200<br/>
-                    1" PVC ELBOW    | PSN-JKT A5-1 | 27274<br/>
+                    Barang       | Lokasi            | Stok<br/>
+                    -------------+-------------------+------<br/>
+                    1" PVC ELBOW | PSN-JKT P5 PROD   | 1200<br/>
+                    1" PVC ELBOW | PSN-JKT A5-1      | 27274<br/>
                     ```<br/>
                   </div>
                 </div>
