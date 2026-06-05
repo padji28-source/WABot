@@ -185,7 +185,7 @@ app.all(['/api/webhook/twilio', '/webhook/whatsapp'], async (req, res) => {
     if (matches.length === 0) {
         twiml.message(`Maaf, data tidak ditemukan.\n\n${contextMessage}\n_Ketik *menu* apabila ingin kembali ke menu awal._`);
     } else {
-        const limitedResults = matches.slice(0, 150); 
+        const limitedResults = matches.slice(0, 8); 
         let messageBody = `${contextMessage}\n\n`;
         
         const maxNameLen = Math.max(6, ...limitedResults.map(i => String(i.name || '').trim().length));
@@ -207,10 +207,8 @@ app.all(['/api/webhook/twilio', '/webhook/whatsapp'], async (req, res) => {
         });
         messageBody += "```\n";
 
-        if (matches.length > 150) {
-          messageBody += `_Menampilkan 150 dari total ${matches.length} hasil. Harap gunakan nama yang lebih spesifik._\n`;
-        } else {
-          messageBody += `_Menampilkan semua ${matches.length} hasil._\n`;
+        if (matches.length > 8) {
+          messageBody += `_Ditemukan total ${matches.length} hasil. Gunakan nama spesifik._\n`;
         }
 
         if (sessionStep === 'waiting_item') {
