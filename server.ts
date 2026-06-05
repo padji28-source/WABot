@@ -8,7 +8,7 @@ import { createServer as createViteServer } from 'vite';
 const app = express();
 const PORT = 3000;
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbvA_5FOxi2-nkfz8iJbptOhDfBCLM5LnTwrVLeJ4pf1hlGjSBywsTXQYYtEjuo0DY2M63wcJmc0tP/pubhtml?gid=263347272&single=true';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbvA_5FOxi2-nkfz8iJbptOhDfBCLM5LnTwrVLeJ4pf1hlGjSBywsTXQYYtEjuo0DY2M63wcJmc0tP/pub?gid=263347272&single=true&output=csv';
 
 // A simple in-memory cache to avoid hitting the CSV on every single query
 let cachedData: any[] = [];
