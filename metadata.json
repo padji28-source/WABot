@@ -1,0 +1,6 @@
+{
+  "name": "WhatsApp Stock Monitor",
+  "description": "Bot WhatsApp untuk mengecek stok barang yang terhubung langsung dengan Google Sheets menggunakan router Twilio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
