@@ -106,40 +106,35 @@ app.all(['/api/webhook/twilio', '/webhook/whatsapp'], async (req, res) => {
     // 1. Show Menu
     if (sessionStep === 'none' && (lowerMsg === "menu" || lowerMsg === "help" || !lowerMsg)) {
         let msg = `*🤖 MENU PENCARIAN STOK*\n\n`;
-        msg += `*Pilih Lokasi (Kirim Angka)*:\n`;
-        uniqueLocators.forEach((loc, idx) => {
-           if (idx < 25) msg += `${idx + 1}. ${loc}\n`;
-        });
-        msg += `\n_Atau pencarian langsung bebas:_\n`;
+        msg += `Silakan ketik nama *Lokasi / Locator* (atau sebagian namanya) untuk memulai.\nContoh: _JKT_ atau _P5_.\n\n`;
+        msg += `_Atau pencarian langsung bebas:_\n`;
         msg += `📦 Ketik: *barang [nama]*\n`;
         msg += `📍 Ketik: *locator [nama]*`;
         
         twiml.message(msg);
         res.setHeader('Set-Cookie', [
-          `sessionStep=waiting_locator; Path=/; Max-Age=3600`, 
+          `sessionStep=waiting_locator_name; Path=/; Max-Age=3600`, 
           `selectedLocator=; Path=/; Max-Age=3600`
         ]);
         res.type('text/xml').send(twiml.toString());
         return;
     }
 
-    // 2. Select Locator
-    if (sessionStep === 'waiting_locator') {
-        const choiceMatch = incomingMsg.match(/^\d+$/);
-        if (choiceMatch) {
-            const idx = parseInt(choiceMatch[0], 10) - 1;
-            if (idx >= 0 && idx < uniqueLocators.length) {
-                const chosenLoc = uniqueLocators[idx];
-                twiml.message(`📍 Lokasi terpilih: *${chosenLoc}*\n\nSilakan ketik *nama barang* yang ingin dicari di lokasi ini.\n\n_Ketik *menu* kapan saja untuk kembali._`);
-                res.setHeader('Set-Cookie', [
-                  `sessionStep=waiting_item; Path=/; Max-Age=3600`, 
-                  `selectedLocator=${encodeURIComponent(chosenLoc)}; Path=/; Max-Age=3600`
-                ]);
-                res.type('text/xml').send(twiml.toString());
-                return;
-            }
+    // 2. Type Locator
+    if (sessionStep === 'waiting_locator_name') {
+        const matchedLocators = uniqueLocators.filter(l => l.toLowerCase().includes(lowerMsg));
+        if (matchedLocators.length > 0) {
+            let locs = matchedLocators.slice(0, 5).join(', ');
+            if (matchedLocators.length > 5) locs += ', ...';
+            
+            twiml.message(`📍 Ditemukan ${matchedLocators.length} lokasi (contoh: ${locs}).\n\nSilakan ketik *nama barang* yang ingin dicari di lokasi tersebut.\n\n_Ketik *menu* kapan saja untuk kembali._`);
+            res.setHeader('Set-Cookie', [
+              `sessionStep=waiting_item; Path=/; Max-Age=3600`, 
+              `selectedLocator=${encodeURIComponent(lowerMsg)}; Path=/; Max-Age=3600`
+            ]);
+        } else {
+            twiml.message(`⚠️ Lokasi dengan kata kunci "${incomingMsg}" tidak ditemukan. Silakan coba kata kunci lain, atau ketik *menu*.`);
         }
-        twiml.message(`⚠️ Pilihan tidak valid. Silakan balas dengan pilihan ANGKA yang sesuai, atau ketik *menu* untuk mengulang.`);
         res.type('text/xml').send(twiml.toString());
         return;
     }
@@ -172,11 +167,11 @@ app.all(['/api/webhook/twilio', '/webhook/whatsapp'], async (req, res) => {
 
         if (sessionStep === 'waiting_item' && selectedLocator) {
             matches = data.filter(item => 
-                item.locator === selectedLocator && 
+                (item.locator && item.locator.toLowerCase().includes(selectedLocator.toLowerCase())) && 
                 ((item.name && item.name.toLowerCase().includes(q)) ||
                  (item.searchKey && item.searchKey.toLowerCase().includes(q)))
             );
-            contextMessage = `*Stok "${q}" di ${selectedLocator}*`;
+            contextMessage = `*Stok "${q}" di lokasi "${selectedLocator}"*`;
         } else {
              matches = data.filter(item => 
                 (item.name && item.name.toLowerCase().includes(q)) ||
